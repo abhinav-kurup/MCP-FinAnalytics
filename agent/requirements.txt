@@ -1,7 +1,7 @@
 fastapi
 uvicorn
 pydantic
-mcp>=1.0.0
+mcp[cli]>=1.0.0
 langgraph
 langchain
 langchain-anthropic

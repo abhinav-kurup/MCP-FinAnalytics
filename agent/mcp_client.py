@@ -1,5 +1,6 @@
 import os
 import asyncio
+import json
 from typing import Dict, Any, List
 from contextlib import AsyncExitStack
 from mcp.client.sse import sse_client
@@ -54,12 +55,22 @@ class MCPClientManager:
         session = self.sessions[server_name]
         try:
             result = await session.call_tool(tool_name, arguments)
+            structured = (
+                getattr(result, "structuredContent", None)
+                or getattr(result, "structured_content", None)
+            )
+            if structured is not None:
+                return structured
+
             # result is a CallToolResult object, which contains a list of content elements
-            # We assume a single JSON or Text content
+            # FastMCP commonly returns JSON-serialised text for dict/list tool outputs.
             if result.content and len(result.content) > 0:
                 content = result.content[0]
                 if content.type == "text":
-                    return content.text
+                    try:
+                        return json.loads(content.text)
+                    except json.JSONDecodeError:
+                        return content.text
                 return content.model_dump()
             return {"status": "success", "message": "Tool executed, but no content returned."}
         except Exception as e:

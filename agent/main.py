@@ -1,6 +1,7 @@
 import os
 import asyncio
 import time
+import json
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
@@ -21,6 +22,29 @@ class AnalyzeResponse(BaseModel):
     reasoning_steps: List[str]
     duration_seconds: float
     charts: Dict[str, str]
+
+def _coerce_result_dict(result: Any) -> Dict[str, Any] | None:
+    if isinstance(result, dict):
+        return result
+    if isinstance(result, str):
+        try:
+            parsed = json.loads(result)
+        except json.JSONDecodeError:
+            return None
+        return parsed if isinstance(parsed, dict) else None
+    return None
+
+def _chart_key(tool_result: Dict[str, Any]) -> str:
+    tool_name = tool_result.get("tool", "chart")
+    args = tool_result.get("args", {})
+    if isinstance(args, dict):
+        if args.get("ticker"):
+            return f"{tool_name}_{args['ticker']}"
+        if args.get("tickers"):
+            tickers = args["tickers"]
+            if isinstance(tickers, list):
+                return f"{tool_name}_{'_'.join(str(t) for t in tickers)}"
+    return tool_name
 
 @app.on_event("startup")
 async def startup_event():
@@ -58,6 +82,7 @@ async def analyze(request: AnalyzeRequest):
         # Run the LangGraph agent
         initial_state = {
             "query": request.query,
+            "options": request.options or {},
             "tickers": [], # Optionally extract tickers earlier if needed
             "tool_calls": [],
             "tool_results": [],
@@ -71,11 +96,12 @@ async def analyze(request: AnalyzeRequest):
         # Extract charts if any base64 charts were returned in tool_results
         charts = {}
         for res in final_state.get("tool_results", []):
-            if "result" in res and isinstance(res["result"], dict):
-                r = res["result"]
+            if "result" in res:
+                r = _coerce_result_dict(res["result"])
+                if not r:
+                    continue
                 if "chart_base64" in r:
-                    charts[res["tool"]] = r["chart_base64"]
-                # some tools might return it as string if parsing failed, handle appropriately
+                    charts[_chart_key(res)] = r["chart_base64"]
 
         duration = time.time() - start_time
         
