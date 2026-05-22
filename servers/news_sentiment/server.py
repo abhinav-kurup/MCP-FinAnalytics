@@ -5,7 +5,11 @@ import requests
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from typing import List, Dict, Any
 
-mcp = FastMCP("news_sentiment")
+mcp = FastMCP(
+    "news_sentiment",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8003")),
+)
 analyzer = SentimentIntensityAnalyzer()
 
 def _get_yfinance_news(ticker: str) -> list[dict]:
