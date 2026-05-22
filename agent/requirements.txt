@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+mcp>=1.0.0
+langgraph
+langchain
+langchain-anthropic
+langchain-openai
+langchain-groq
+httpx
+python-dotenv
