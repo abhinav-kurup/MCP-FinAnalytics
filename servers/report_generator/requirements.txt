@@ -1,0 +1,7 @@
+mcp>=1.0.0
+yfinance
+pandas
+pandas-ta
+matplotlib
+mplfinance
+uvicorn
