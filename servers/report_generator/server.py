@@ -1,15 +1,20 @@
 from mcp.server.fastmcp import FastMCP
+import os
 import yfinance as yf
 import pandas_ta as ta
 import matplotlib
-matplotlib.use('Agg') # Headless mode
+matplotlib.use('Agg') 
 import matplotlib.pyplot as plt
 import mplfinance as mpf
 import base64
 from io import BytesIO
 import pandas as pd
 
-mcp = FastMCP("report_generator")
+mcp = FastMCP(
+    "report_generator",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8005")),
+)
 
 # Set a cleaner style globally for matplotlib
 plt.style.use('seaborn-v0_8-darkgrid')
