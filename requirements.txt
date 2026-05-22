@@ -1,0 +1,18 @@
+# MCP Financial Analyst Agent
+mcp>=1.0.0
+fastapi
+uvicorn
+yfinance
+pandas-ta
+newsapi-python
+vaderSentiment
+matplotlib
+mplfinance
+langgraph
+langchain
+langchain-anthropic
+langchain-openai
+langchain-groq
+httpx
+python-dotenv
+pytest

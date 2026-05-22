@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  stock-data:
+    build: ./servers/stock_data
+    ports: ["8001:8001"]
+    
+  technical-analysis:
+    build: ./servers/technical_analysis
+    ports: ["8002:8002"]
+    
+  news-sentiment:
+    build: ./servers/news_sentiment
+    ports: ["8003:8003"]
+    env_file: .env
+    
+  fundamentals:
+    build: ./servers/fundamentals
+    ports: ["8004:8004"]
+    
+  report-generator:
+    build: ./servers/report_generator
+    ports: ["8005:8005"]
+    
+  agent:
+    build: ./agent
+    ports: ["8000:8000"]
+    env_file: .env
+    depends_on:
+      - stock-data
+      - technical-analysis
+      - news-sentiment
+      - fundamentals
+      - report-generator
