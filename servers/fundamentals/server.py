@@ -1,7 +1,12 @@
 from mcp.server.fastmcp import FastMCP
+import os
 import yfinance as yf
 
-mcp = FastMCP("fundamentals")
+mcp = FastMCP(
+    "fundamentals",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8004")),
+)
 
 @mcp.tool()
 def get_fundamentals(ticker: str) -> dict:
