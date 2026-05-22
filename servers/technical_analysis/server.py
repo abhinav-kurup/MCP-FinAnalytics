@@ -1,9 +1,14 @@
 from mcp.server.fastmcp import FastMCP
+import os
 import yfinance as yf
 import pandas_ta as ta
 from typing import List, Dict, Any
 
-mcp = FastMCP("technical_analysis")
+mcp = FastMCP(
+    "technical_analysis",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8002")),
+)
 
 def _get_history(ticker: str, period: str) -> yf.Ticker:
     """Helper to fetch history data"""
