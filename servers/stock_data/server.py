@@ -1,8 +1,13 @@
 from mcp.server.fastmcp import FastMCP
+import os
 import yfinance as yf
 from typing import List, Dict, Any
 
-mcp = FastMCP("stock_data")
+mcp = FastMCP(
+    "stock_data",
+    host=os.getenv("HOST", "0.0.0.0"),
+    port=int(os.getenv("PORT", "8001")),
+)
 
 @mcp.tool()
 def get_stock_price(ticker: str) -> dict:
@@ -113,7 +118,4 @@ def compare_stocks(tickers: list[str], period: str = "1mo") -> dict:
         return {"error": str(e)}
 
 if __name__ == "__main__":
-    import uvicorn
-    # When running as script, use the built-in MCP server
-    # FastMCP uses standard ASGI app if run with CLI, but we can also use built in run
     mcp.run(transport="sse")
