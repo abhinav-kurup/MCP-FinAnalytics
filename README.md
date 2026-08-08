@@ -12,7 +12,7 @@ and the final answer is synthesized only from verified tool results.
 ## What It Does
 
 - Compares stocks over a requested time window.
-- Fetches current and historical price data with `yfinance`.
+- Uses "yfinance" to Fetch current and historical price data.
 - Calculates technical indicators such as RSI, MACD, Bollinger Bands, and moving averages.
 - Pulls company fundamentals such as P/E, EPS, margins, revenue growth, and analyst metadata.
 - Scores recent news headlines with VADER sentiment.
